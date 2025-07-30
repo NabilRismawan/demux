@@ -15,10 +15,10 @@ dist:
 		mkdir -p dist
 
 $(TARGET): dist $(SOURCES) src/wokwi-api.h
-	  clang --target=wasm32-unknown-wasi --sysroot C:/Users/zakad/Downloads/Compressed/wasi-sdk-27.0-x86_64-windows/share/wasi-sysroot -nostartfiles -Wl,--import-memory -Wl,--export-table -Wl,--no-entry -Werror -o $(TARGET) $(SOURCES)
+	  clang --target=wasm32-unknown-wasi --sysroot /opt/wasi-libc -nostartfiles -Wl,--import-memory -Wl,--export-table -Wl,--no-entry -Werror -o $(TARGET) $(SOURCES)
 
 dist/chip.json: dist chip.json
-	  copy chip.json dist
+	  cp chip.json dist
 
 .PHONY: test
 test:

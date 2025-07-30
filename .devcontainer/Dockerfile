@@ -1,19 +1,13 @@
-# Gunakan base image Windows Server Core
-FROM mcr.microsoft.com/windows/servercore:ltsc2022
+# Gunakan base image Linux dari Wokwi yang sudah berisi Clang/WASI SDK
+FROM wokwi/builder-clang-wasm
 
-# Tetapkan direktori kerja
-WORKDIR C:/
+# Ganti ke user root untuk instalasi
+USER root
+RUN apk add gcompat libc6-compat
 
-# Install arduino-cli untuk Windows menggunakan PowerShell
-RUN powershell -Command \
-    Invoke-WebRequest -Uri https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Windows_64bit.zip -OutFile arduino-cli.zip; \
-    Expand-Archive -Path arduino-cli.zip -DestinationPath C:\arduino-cli; \
-    Remove-Item arduino-cli.zip
-
-# Tambahkan direktori arduino-cli ke dalam System PATH
-# agar 'arduino-cli.exe' bisa dipanggil dari mana saja
-RUN setx /M PATH "%PATH%;C:\arduino-cli"
-
-# Konfigurasi arduino-cli dengan menginstal core AVR
-# Perintahnya sama, hanya perlu menambahkan .exe
-RUN arduino-cli.exe core update-index && arduino-cli.exe core install arduino:avr
+# Install arduino-cli versi Linux
+RUN  wget -O /tmp/cli.tar.gz \
+        https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz && \
+    tar -C /usr/local/bin -zxvf /tmp/cli.tar.gz && \
+    rm /tmp/cli.tar.gz
+RUN arduino-cli core update-index && arduino-cli core install arduino:avr
